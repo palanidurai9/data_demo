@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>ZeroTrace — Completed</title>
+  <style>
+    body {margin:0; font-family: Inter, sans-serif; background:#f7f7f8; display:flex; justify-content:center; align-items:center; height:100vh;}
+    .screen {width:600px; background:#222226; color:#dfe3e6; border-radius:20px; padding:30px; text-align:center; box-shadow:0 6px 20px rgba(0,0,0,0.25);}
+    h1 {font-size:24px; margin:20px 0;}
+    .btn {margin:10px; background:#444; color:white; padding:12px 20px; border:none; border-radius:10px; cursor:pointer;}
+    .cert {margin-top:20px; word-break:break-all;}
+  </style>
+</head>
+<body>
+  <div class="screen">
+    <div style="font-size:50px">✅</div>
+    <h1>Wipe Completed Securely</h1>
+    <p>Certificate ID: <span id="certId"></span></p>
+    <p>SHA-256: <span id="shaVal"></span></p>
+    <div>
+      <button class="btn" onclick="alert('PDF Downloaded')">Download PDF</button>
+      <button class="btn" onclick="alert('JSON Downloaded')">Download JSON</button>
+    </div>
+  </div>
+  <script>
+    function generateCertId(){
+      const dt = new Date();
+      const y = dt.getFullYear();
+      const m = String(dt.getMonth()+1).padStart(2,'0');
+      const d = String(dt.getDate()).padStart(2,'0');
+      const rnd = Math.floor(Math.random()*90000)+10000;
+      return `ZT-${y}-${m}-${d}-${rnd}`;
+    }
+    async function sha256Hex(text){
+      const data = new TextEncoder().encode(text);
+      const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+      return Array.from(new Uint8Array(hashBuffer)).map(b=>b.toString(16).padStart(2,'0')).join('');
+    }
+    const certId = generateCertId();
+    document.getElementById('certId').textContent = certId;
+    sha256Hex(certId).then(h=>document.getElementById('shaVal').textContent=h);
+  </script>
+</body>
+</html>

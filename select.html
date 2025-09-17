@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>ZeroTrace — Select Device</title>
+  <style>
+    body {margin:0; font-family: Inter, sans-serif; background:#f7f7f8; display:flex; justify-content:center; align-items:center; height:100vh;}
+    .screen {width:600px; background:#222226; color:#dfe3e6; border-radius:20px; padding:30px; box-shadow:0 6px 20px rgba(0,0,0,0.25);}
+    h1 {font-size:26px; margin-bottom:20px;}
+    .device-grid {display:flex; gap:20px;}
+    .device {flex:1; background:#2b2c2f; padding:20px; border-radius:12px; text-align:center; cursor:pointer;}
+    .btn {margin-top:20px; background:#444; color:white; padding:12px 20px; border:none; border-radius:10px; cursor:pointer;}
+  </style>
+</head>
+<body>
+  <div class="screen">
+    <h1>Select a device to wipe</h1>
+    <div class="device-grid">
+      <div class="device" onclick="nextPage('confirm.html?device=Internal SSD&size=500GB')">Internal SSD<br><small>500 GB</small></div>
+      <div class="device" onclick="nextPage('confirm.html?device=USB Drive&size=64GB')">USB Drive<br><small>64 GB</small></div>
+    </div>
+    <button class="btn" onclick="location.reload()">Scan Again</button>
+  </div>
+  <script>
+    function nextPage(url){ window.location.href = url; }
+  </script>
+</body>
+</html>
