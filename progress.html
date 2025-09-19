@@ -2,33 +2,451 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>ZeroTrace — Progress</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ZeroTrace — Erasing in Progress</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    body {margin:0; font-family: Inter, sans-serif; background:#f7f7f8; display:flex; justify-content:center; align-items:center; height:100vh;}
-    .screen {width:600px; background:#222226; color:#dfe3e6; border-radius:20px; padding:30px; text-align:center; box-shadow:0 6px 20px rgba(0,0,0,0.25);}
-    h1 {font-size:24px; margin-bottom:20px;}
-    .bar {height:20px; background:#444; border-radius:12px; overflow:hidden; margin:20px 0;}
-    .bar > div {height:100%; background:linear-gradient(90deg,#e6e9ec,#cfd6db); width:0%;}
-    .btn {margin-top:20px; background:#444; color:white; padding:12px 20px; border:none; border-radius:10px; cursor:pointer;}
+    :root {
+      --primary: #4f46e5;
+      --primary-hover: #4338ca;
+      --background: #f8fafc;
+      --card: #ffffff;
+      --text: #1e293b;
+      --text-secondary: #64748b;
+      --border: #e2e8f0;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --error: #ef4444;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --transition: all 0.3s ease-in-out;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: var(--background);
+      color: var(--text);
+      line-height: 1.5;
+      min-height: 100vh;
+      padding: 2rem 1rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 640px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 1rem;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      transition: var(--transition);
+      text-align: center;
+      padding: 2.5rem 2rem;
+    }
+
+    .progress-icon {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 1.5rem;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .progress-icon svg {
+      width: 100%;
+      height: 100%;
+      animation: spin 2s linear infinite;
+    }
+
+    .progress-icon .checkmark {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      opacity: 0;
+      transition: all 0.3s ease-in-out;
+    }
+
+    .progress-icon.completed {
+      animation: none;
+    }
+
+    .progress-icon.completed svg {
+      animation: none;
+      opacity: 0;
+    }
+
+    .progress-icon.completed .checkmark {
+      transform: translate(-50%, -50%) scale(1);
+      opacity: 1;
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      color: var(--text);
+    }
+
+    .status {
+      color: var(--text-secondary);
+      margin-bottom: 2rem;
+      min-height: 1.5em;
+    }
+
+    .progress-container {
+      width: 100%;
+      margin-bottom: 1.5rem;
+    }
+
+    .progress-labels {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+    }
+
+    .progress-bar {
+      height: 8px;
+      background: #e2e8f0;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: 1.5rem;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--primary);
+      border-radius: 4px;
+      transition: width 0.3s ease-in-out;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .progress-fill::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.4),
+        transparent
+      );
+      animation: shimmer 2s infinite;
+    }
+
+    @keyframes shimmer {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    .details {
+      background: #f8fafc;
+      border-radius: 0.75rem;
+      padding: 1.25rem;
+      margin-top: 1.5rem;
+      text-align: left;
+    }
+
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+      font-size: 0.875rem;
+    }
+
+    .detail-label {
+      color: var(--text-secondary);
+    }
+
+    .detail-value {
+      font-weight: 500;
+    }
+
+    .speed {
+      color: var(--success);
+      font-weight: 600;
+    }
+
+    .time-remaining {
+      font-style: italic;
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+      margin-top: 0.5rem;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.75rem 1.5rem;
+      font-size: 0.9375rem;
+      font-weight: 500;
+      border-radius: 0.5rem;
+      border: none;
+      cursor: pointer;
+      transition: var(--transition);
+      text-decoration: none;
+      background: #f1f5f9;
+      color: var(--text);
+      margin-top: 1.5rem;
+    }
+
+    .btn:hover {
+      background: #e2e8f0;
+    }
+
+    .btn.hidden {
+      display: none;
+    }
+
+    @media (max-width: 480px) {
+      .card {
+        padding: 1.5rem 1.25rem;
+      }
+      
+      h1 {
+        font-size: 1.25rem;
+      }
+    }
   </style>
 </head>
 <body>
-  <div class="screen">
-    <h1>Secure Erase in Progress…</h1>
-    <div class="bar"><div id="fill"></div></div>
-    <div id="pct">0%</div>
+  <div class="container">
+    <div class="card">
+      <div class="progress-icon" id="progress-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+        </svg>
+        <div class="checkmark">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+          </svg>
+        </div>
+      </div>
+      
+      <h1 id="progress-title">Erasing Device</h1>
+      <div class="status" id="status-message">Preparing to erase data...</div>
+      
+      <div class="progress-container">
+        <div class="progress-labels">
+          <span>0%</span>
+          <span id="progress-percent">0%</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+        <div class="time-remaining" id="time-remaining">Calculating time remaining...</div>
+      </div>
+      
+      <div class="details">
+        <div class="detail-row">
+          <span class="detail-label">Device:</span>
+          <span class="detail-value" id="device-name">-</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Data Written:</span>
+          <span class="detail-value"><span id="data-written">0 MB</span> / <span id="total-size">500 MB</span></span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Speed:</span>
+          <span class="detail-value speed" id="speed">-</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Elapsed Time:</span>
+          <span class="detail-value" id="elapsed-time">00:00</span>
+        </div>
+      </div>
+      
+      <button class="btn hidden" id="cancel-btn" onclick="cancelErase()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+        Cancel
+      </button>
+      
+      <button class="btn hidden" id="done-btn" onclick="nextPage('complete.html')">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+          <polyline points="22 4 12 14.01 9 11.01"></polyline>
+        </svg>
+        Done
+      </button>
+    </div>
   </div>
+
   <script>
-    const fill = document.getElementById('fill');
-    const pct = document.getElementById('pct');
+    // Get URL parameters
+    const params = new URLSearchParams(window.location.search);
+    const device = params.get('device') || 'Storage Device';
+    const size = params.get('size') || '0GB';
+    
+    // DOM Elements
+    const progressFill = document.getElementById('progress-fill');
+    const progressPercent = document.getElementById('progress-percent');
+    const statusMessage = document.getElementById('status-message');
+    const progressTitle = document.getElementById('progress-title');
+    const progressIcon = document.getElementById('progress-icon');
+    const cancelBtn = document.getElementById('cancel-btn');
+    const doneBtn = document.getElementById('done-btn');
+    const deviceNameEl = document.getElementById('device-name');
+    const dataWrittenEl = document.getElementById('data-written');
+    const totalSizeEl = document.getElementById('total-size');
+    const speedEl = document.getElementById('speed');
+    const elapsedTimeEl = document.getElementById('elapsed-time');
+    const timeRemainingEl = document.getElementById('time-remaining');
+    
+    // Initialize
     let progress = 0;
-    const interval = setInterval(()=>{
-      progress += 5;
-      if(progress > 100){ progress = 100; clearInterval(interval); setTimeout(()=>nextPage('complete.html'),1000); }
-      fill.style.width = progress+'%';
-      pct.textContent = progress+'%';
-    }, 300);
-    function nextPage(url){ window.location.href = url; }
+    let startTime = new Date();
+    let isComplete = false;
+    
+    // Set device info
+    deviceNameEl.textContent = device;
+    totalSizeEl.textContent = size;
+    
+    // Simulate progress
+    function updateProgress() {
+      if (isComplete) return;
+      
+      // Increment progress
+      progress += Math.random() * 5;
+      if (progress > 100) progress = 100;
+      
+      // Update UI
+      const roundedProgress = Math.round(progress);
+      progressFill.style.width = `${progress}%`;
+      progressPercent.textContent = `${roundedProgress}%`;
+      
+      // Update status messages based on progress
+      if (progress < 10) {
+        statusMessage.textContent = 'Initializing secure erase...';
+      } else if (progress < 30) {
+        statusMessage.textContent = 'Overwriting data with secure patterns...';
+      } else if (progress < 70) {
+        statusMessage.textContent = 'Verifying data erasure...';
+      } else if (progress < 90) {
+        statusMessage.textContent = 'Finalizing secure erase...';
+      } else if (progress >= 100) {
+        completeErase();
+        return;
+      }
+      
+      // Update other metrics
+      updateMetrics();
+      
+      // Continue progress
+      const delay = 200 + Math.random() * 300; // Random delay between 200-500ms
+      setTimeout(updateProgress, delay);
+    }
+    
+    function updateMetrics() {
+      // Calculate elapsed time
+      const now = new Date();
+      const elapsedSeconds = Math.floor((now - startTime) / 1000);
+      const minutes = Math.floor(elapsedSeconds / 60).toString().padStart(2, '0');
+      const seconds = (elapsedSeconds % 60).toString().padStart(2, '0');
+      elapsedTimeEl.textContent = `${minutes}:${seconds}`;
+      
+      // Calculate speed (simulated)
+      const speed = 50 + Math.random() * 150; // MB/s
+      speedEl.textContent = `${Math.round(speed)} MB/s`;
+      
+      // Calculate data written
+      const totalSizeMB = size.includes('GB') ? 
+        parseFloat(size) * 1024 : 
+        parseFloat(size);
+      const writtenMB = Math.min(Math.round((progress / 100) * totalSizeMB), totalSizeMB);
+      dataWrittenEl.textContent = `${writtenMB} MB`;
+      
+      // Calculate time remaining
+      if (progress > 0 && progress < 100) {
+        const remainingPercent = 100 - progress;
+        const estimatedTotalTime = (elapsedSeconds * 100) / progress;
+        const remainingTime = Math.round((estimatedTotalTime - elapsedSeconds) / 10) * 10; // Round to nearest 10 seconds
+        
+        if (remainingTime < 60) {
+          timeRemainingEl.textContent = `About ${remainingTime} seconds remaining`;
+        } else {
+          const minutes = Math.floor(remainingTime / 60);
+          timeRemainingEl.textContent = `About ${minutes} minute${minutes !== 1 ? 's' : ''} remaining`;
+        }
+      }
+    }
+    
+    function completeErase() {
+      isComplete = true;
+      progress = 100;
+      progressFill.style.width = '100%';
+      progressPercent.textContent = '100%';
+      statusMessage.textContent = 'Secure erase completed successfully!';
+      progressTitle.textContent = 'Erase Complete';
+      progressIcon.classList.add('completed');
+      
+      // Show done button and hide cancel
+      cancelBtn.classList.add('hidden');
+      doneBtn.classList.remove('hidden');
+      
+      // Update final metrics
+      updateMetrics();
+      timeRemainingEl.textContent = 'Completed';
+    }
+    
+    function cancelErase() {
+      if (confirm('Are you sure you want to cancel the secure erase? This may leave your data recoverable.')) {
+        // Redirect back to device selection
+        window.location.href = 'index.html';
+      }
+    }
+    
+    // Start the process
+    setTimeout(() => {
+      cancelBtn.classList.remove('hidden');
+      updateProgress();
+    }, 1000);
+    
+    // Handle page visibility changes
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        document.title = 'Erasing...';
+      } else {
+        document.title = isComplete ? 'Erase Complete' : 'Erasing Device';
+      }
+    });
+    
+    function nextPage(url) {
+      window.location.href = url;
+    }
   </script>
 </body>
 </html>

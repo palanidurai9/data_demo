@@ -2,31 +2,277 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>ZeroTrace — Confirm</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ZeroTrace — Confirm Erasure</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    body {margin:0; font-family: Inter, sans-serif; background:#f7f7f8; display:flex; justify-content:center; align-items:center; height:100vh;}
-    .screen {width:600px; background:#222226; color:#dfe3e6; border-radius:20px; padding:30px; text-align:center; box-shadow:0 6px 20px rgba(0,0,0,0.25);}
-    h1 {font-size:22px; margin-bottom:20px;}
-    .warning {background:#2b2c2f; padding:20px; border-radius:12px; margin:20px 0;}
-    .btn {margin:10px; background:#444; color:white; padding:12px 20px; border:none; border-radius:10px; cursor:pointer;}
+    :root {
+      --primary: #4f46e5;
+      --primary-hover: #4338ca;
+      --background: #f8fafc;
+      --card: #ffffff;
+      --text: #1e293b;
+      --text-secondary: #64748b;
+      --border: #e2e8f0;
+      --warning-bg: #fffbeb;
+      --warning-text: #92400e;
+      --warning-border: #f59e0b;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --transition: all 0.2s ease-in-out;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: var(--background);
+      color: var(--text);
+      line-height: 1.5;
+      min-height: 100vh;
+      padding: 2rem 1rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 640px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 1rem;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      transition: var(--transition);
+    }
+
+    .card-header {
+      padding: 1.5rem;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .card-body {
+      padding: 1.5rem;
+    }
+
+    .card-footer {
+      padding: 1.5rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .warning-box {
+      background: var(--warning-bg);
+      border: 1px solid var(--warning-border);
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      color: var(--warning-text);
+    }
+
+    .warning-box h3 {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.75rem;
+      color: var(--warning-text);
+    }
+
+    .warning-icon {
+      color: var(--warning-border);
+      font-size: 1.25rem;
+    }
+
+    .device-info {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 1.25rem;
+      margin: 1.5rem 0;
+      text-align: center;
+    }
+
+    .device-name {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+
+    .device-details {
+      color: var(--text-secondary);
+      font-size: 0.9375rem;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.625rem 1.25rem;
+      font-size: 0.9375rem;
+      font-weight: 500;
+      border-radius: 0.5rem;
+      border: none;
+      cursor: pointer;
+      transition: var(--transition);
+      text-decoration: none;
+      gap: 0.5rem;
+      min-width: 120px;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-hover);
+      transform: translateY(-1px);
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .btn-outline:hover {
+      background: #f8fafc;
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .btn-danger {
+      background: #ef4444;
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background: #dc2626;
+      transform: translateY(-1px);
+    }
+
+    @media (max-width: 480px) {
+      .card {
+        border-radius: 0.75rem;
+      }
+      
+      .card-footer {
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+      
+      .btn {
+        width: 100%;
+      }
+    }
   </style>
 </head>
 <body>
-  <div class="screen">
-    <h1>⚠️ Confirm Erase</h1>
-    <div class="warning">
-      <p>This will permanently erase all data on:</p>
-      <p id="target"></p>
+  <div class="container">
+    <div class="card">
+      <div class="card-header">
+        <h1>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="warning-icon">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+            <line x1="12" y1="9" x2="12" y2="13"></line>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          </svg>
+          Confirm Erasure
+        </h1>
+      </div>
+      <div class="card-body">
+        <div class="warning-box">
+          <h3>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+              <line x1="12" y1="9" x2="12" y2="13"></line>
+              <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+            This action cannot be undone
+          </h3>
+          <p>All data on the selected device will be permanently erased and cannot be recovered. Please ensure you have backed up any important data before proceeding.</p>
+        </div>
+
+        <div class="device-info">
+          <div class="device-name" id="target-device">Device Name</div>
+          <div class="device-details" id="target-size">Size: 0 GB</div>
+        </div>
+      </div>
+      <div class="card-footer">
+        <button class="btn btn-outline" onclick="history.back()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+          Back
+        </button>
+        <button class="btn btn-danger" id="confirm-btn" onclick="confirmErase()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="3 6 5 6 21 6"></polyline>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+          </svg>
+          Confirm & Wipe
+        </button>
+      </div>
     </div>
-    <button class="btn" onclick="history.back()">Back</button>
-    <button class="btn" onclick="nextPage('progress.html')">Confirm & Wipe</button>
   </div>
+
   <script>
-    function nextPage(url){ window.location.href = url; }
+    // Get URL parameters
     const params = new URLSearchParams(window.location.search);
-    const dev = params.get('device');
-    const size = params.get('size');
-    document.getElementById('target').textContent = `${dev} — ${size}`;
+    const device = params.get('device') || 'Selected Device';
+    const size = params.get('size') || '0GB';
+
+    // Update UI with device info
+    document.getElementById('target-device').textContent = device;
+    document.getElementById('target-size').textContent = `Size: ${size}`;
+    document.title = `ZeroTrace — Erase ${device}`;
+
+    function confirmErase() {
+      const btn = document.getElementById('confirm-btn');
+      const originalText = btn.innerHTML;
+      
+      // Disable button and show loading state
+      btn.disabled = true;
+      btn.innerHTML = `
+        <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        Erasing...
+      `;
+      
+      // Simulate processing delay before redirect
+      setTimeout(() => {
+        nextPage('progress.html');
+      }, 1000);
+    }
+
+    function nextPage(url) { 
+      window.location.href = url; 
+    }
   </script>
 </body>
 </html>
